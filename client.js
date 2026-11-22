@@ -183,7 +183,7 @@ window.__ModuleLoader__.load({
           chipRow,
           h('div', { style: { ...S.card, marginTop: 8 } },
             h('div', { style: { fontSize: 12, color: C.muted } },
-              year + ' 年真题：共 ' + list.length + ' 个设问' + (Number(year) <= 2021 ? '（旧版式）' : '（现行版式）') + '。参考答案为 AI 辅助整理，仅供对照参考，请以教材和官方答案为准。'),
+              year + ' 年真题：共 ' + list.length + ' 个设问' + (Number(year) <= 2021 ? '（旧版式）' : '（现行版式）') + '。答案为 AI 辅助整理，仅供对照参考。'),
             list.map((e) => h('div', { key: e.id, style: { ...S.entry, marginTop: 8 } },
               h('div', { style: S.entryHead, onClick: () => setOpen((o) => ({ ...o, [e.id]: !o[e.id] })) },
                 h('div', null,
@@ -446,7 +446,7 @@ window.__ModuleLoader__.load({
         if (aiItems.length) {
           return h('div', { style: S.card },
             h('div', { style: S.row },
-              h('div', { style: { fontWeight: 600 } }, 'AI 生成结果（点击题目看答案；AI 内容仅供练习，请自行核对）'),
+              h('div', { style: { fontWeight: 600 } }, 'AI 生成结果（点击题目看答案；内容仅供参考，请自行核对）'),
               h('button', { style: S.btn, onClick: () => copyText(aiText) }, '复制全文'),
               h('button', { style: S.btn, onClick: () => downloadText('434模拟卷_' + (aiSeed || 'ai') + '.md', aiText) }, '导出 Markdown'),
               h('button', { style: S.btn, onClick: () => saveLocal('434模拟卷_' + (aiSeed || 'ai') + '.md', aiText) }, savedPath ? '已保存' : '保存到本地')),
@@ -540,7 +540,7 @@ window.__ModuleLoader__.load({
           h('div', { style: { fontSize: 12, color: C.muted, marginTop: 6 } },
             '共 ' + rows.length + ' 条，筛选出 ' + filtered.length + ' 条' + (filtered.length > display.length ? '（显示前 ' + display.length + ' 条）' : ''),
             h('div', { style: { fontSize: 11, color: C.muted, marginTop: 4 } },
-              '层级：★ 核心必背｜○ 次重点｜· 了解即可。章节按考纲 15 章归位，不是教材章号。内容为 AI 辅助整理，可能存在错漏，仅供学习参考，请以希尔、王书教材与官方考纲为准。'))),
+              '层级：★ 核心必背｜○ 次重点｜· 了解即可。章节按考纲 15 章归位，不是教材章号。AI 辅助整理，仅供学习参考；请以教材与官方考纲为准。'))),
         display.map((r) => h('div', { key: r.id, style: S.entry },
           h('div', { style: S.entryHead, onClick: () => setOpen((o) => ({ ...o, [r.id]: !o[r.id] })) },
             h('div', null,
@@ -562,39 +562,64 @@ window.__ModuleLoader__.load({
     }
 
     function AboutTab() {
-      const block = (title, nodes) => h('div', { style: S.card },
-        h('div', { style: { fontWeight: 700, marginBottom: 6 } }, title),
-        h('div', { style: { fontSize: 13, lineHeight: 1.9 } }, nodes))
+      const Section = ({ no, title, children }) => h('div', { style: S.card },
+        h('div', { style: { display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 } },
+          h('span', { style: { color: C.brand, fontWeight: 700, fontSize: 12 } }, no),
+          h('span', { style: { fontWeight: 700, fontSize: 14 } }, title)),
+        h('div', { style: { fontSize: 13, lineHeight: 1.9 } }, children))
+      const Line = ({ label, children }) => h('div', { style: { marginBottom: 6 } },
+        label ? h('b', null, label) : null, children)
+      const Ul = ({ items }) => h('ul', { style: { margin: '4px 0 0 18px', padding: 0 } },
+        items.map((x, i) => h('li', { key: i, style: { marginBottom: 4 } }, x)))
+
       return h('div', null,
-        block('这是给谁用的', [
-          '给备考北京师范大学 434 国际商务专硕的同学用的：真题规律、按年份刷题、背知识点、出模拟题，都在一个面板里完成。',
-        ]),
-        block('怎么用（四个入口）', [
-          h('div', null, h('b', null, '真题分析：'), '先看考纲各章五年热力、重复率与 2027 候补排序；再按年份翻 2020—2026 真题，点开看参考答案、考点分析与答题思路。默认停在 2022 年。'),
-          h('div', null, h('b', null, '抽背模式：'), '选章节、题量，随机抽知识点；先只出题，点“显示答案”再看资料库要点，可标记记住/没记住，适合碎片时间反复过。'),
-          h('div', null, h('b', null, '模考模式：'), '离线版秒出一整卷，答案是要点版；在线 AI 版会调用当前 DSH 模型，按封装提示词生成完整试卷与答案，生成中可先看题目，完成后逐题点开答案。'),
-          h('div', null, h('b', null, '资料库：'), '考纲知识点（核心必背、次重点、了解即可三个层级已全部整理），按章筛选或搜关键词，展开即定义、提纲、要点与真题考法，可直接复制背诵。'),
-        ]),
-        block('关于在线 AI', [
-          '在线 AI 用的是你 DSH 当前配置的模型，不额外收你的 Key；每套约消耗 1—2 万 tokens（约 ¥0.01—0.05），通常 1—5 分钟出完。',
-          '生成在后台进行，可以切到其他标签或工作区继续用，回来接着看；AI 内容仅供参考，正式背诵请以教材表述为准。',
-        ]),
-        block('数据与更新', [
-          '真题：2022—2026 现行版式 60 个设问；2020—2021 旧版式 20 个设问。',
-          '知识库：三个层级已全部整理（核心必背、次重点、了解即可），会继续校对与扩写。',
-          '这个项目会持续更新：真题年份、热点库、知识点内容都会陆续加；有需要或发现问题，可以在 DSH 插件页留言，我会尽量回复。',
-        ]),
-        block('章节与层级说明', [
-          h('div', null, h('b', null, '章节怎么来的：'), '这里的 1—15 章是考纲的 15 个知识模块，不是某本教材的章号。我们按考纲把希尔第 13 版（19 章）与王书第五版（11 章）的内容逐条归位，例如希尔第 5—6 章归入考纲第 4 章国际贸易理论与政策，王书第六、七章归入第 10 章战略与组织，希尔第 16 章归入第 12 章生产与供应链；王书没有独立出口进口章，第 11 章以希尔第 15 章为准。'),
-          h('div', { style: { marginTop: 6 } }, h('b', null, '层级含义：'), '★ 是真题反复出现、优先背诵的核心考点；○ 是考纲要求、理解记忆为主的次重点；· 是教材边角、了解即可的补充点。三个层级均已整理，后续会继续校对。'),
-          h('div', { style: { marginTop: 6 } }, h('b', null, '后缀与来源：'), '〔总〕总述条目、〔分〕分述条目、〔补〕教材外补充；来源列 希=希尔、王=王书、双=两书共有。层级是我们依据 2022—2026 真题与两书覆盖度做的复习优先级建议，不是官方分类，后续会按反馈调整。'),
-        ]),
-        block('声明与许可', [
-          '统计与候补排序是描述性分析，不是押题；请按考纲全面复习。',
-          '知识点笔记、考点分析、参考答案与模拟题内容均为 AI 辅助整理或生成，可能存在事实、口径或表述偏差，仅供学习参考；请以希尔、王书教材与官方考纲为准，发现错误欢迎反馈纠错。',
-          '内容为个人整理，仅供学习交流，请勿传播或用于商业用途；代码采用 MIT，内容采用 CC BY-NC-SA 4.0。',
-          '本插件不包含教材原文、真题全文与他人的付费资料；AI 生成内容需自行核对。',
-        ]))
+        h('div', { style: { ...S.card, borderColor: '#f0c869', background: 'rgba(240,200,105,0.10)' } },
+          h('div', { style: { fontWeight: 700, marginBottom: 6 } }, '使用前请知悉'),
+          h(Ul, { items: [
+            '这是学习辅助工具：统计与候补排序是描述性分析，不是押题。',
+            '知识点、考点分析、参考答案与模拟题均为 AI 辅助整理或生成，可能存在偏差；请以希尔、王书第五版教材与官方考纲为准。',
+            'AI 生成内容需自行核对；发现错误欢迎反馈，我会尽量修正。',
+          ] })),
+
+        h(Section, { no: '01', title: '这是什么' },
+          h(Ul, { items: [
+            '给备考北京师范大学 434 国际商务专硕的同学用的 DeepSeek Harness 插件。',
+            '四件事：真题规律与按年份刷题、抽背、模考、知识点资料库。',
+            '免费、本地运行；在线 AI 功能使用你自己 DSH 配置的模型。',
+          ] })),
+
+        h(Section, { no: '02', title: '四个入口怎么用' },
+          h(Line, { label: '真题分析：' }, '先看五年热力、重复率与候补排序；再按年份翻 2020—2026 真题，点开看参考答案、考点分析、答题思路。'),
+          h(Line, { label: '抽背模式：' }, '选章节和题量，随机抽知识点；先出题，点“显示答案”再看要点，可标记记住/没记住。'),
+          h(Line, { label: '模考模式：' }, '离线版秒出一整卷，答案是要点版；在线 AI 版生成完整试卷与答案，完成后逐题点开看答案。'),
+          h(Line, { label: '资料库：' }, '按章筛选或搜关键词，展开看定义、提纲、要点、真题考法，可复制背诵。')),
+
+        h(Section, { no: '03', title: '在线 AI 说明' },
+          h(Ul, { items: [
+            '使用当前 DSH 已配置的模型，不需要额外填 Key。',
+            '每套约 1—2 万 tokens（约 ¥0.01—0.05），通常 1—5 分钟。',
+            '后台生成，可切到其他标签或工作区继续用，回来接着看。',
+            '生成中只显示题目；完成后逐题展开答案。',
+          ] })),
+
+        h(Section, { no: '04', title: '章节、层级与来源' },
+          h(Line, { label: '章节：' }, '1—15 是考纲知识模块，不是教材章号；按考纲把希尔第 13 版与王书第五版的内容逐条归位。'),
+          h(Line, { label: '层级：' }, '★ 核心必背（真题高频）、○ 次重点（理解记忆）、· 了解即可（边角补充），三个层级均已整理。'),
+          h(Line, { label: '后缀与来源：' }, '〔总〕总述、〔分〕分述、〔补〕教材外补充；希=希尔、王=王书、双=两书共有。')),
+
+        h(Section, { no: '05', title: '更新与反馈' },
+          h(Ul, { items: [
+            '知识点会继续校对与扩写，年份与热点素材也会持续补充。',
+            '发现问题、想新增内容或有建议：在 DSH 插件页留言，或到 GitHub 仓库提交 Issue。',
+            'GitHub：github.com/lililic12306/bnu434',
+          ] })),
+
+        h(Section, { no: '06', title: '许可与声明' },
+          h(Ul, { items: [
+            '代码 MIT；知识点与答案内容 CC BY-NC-SA 4.0（署名、非商业、相同方式共享）。',
+            '不含教材原文、真题全文或他人付费资料，仅供个人学习交流。',
+            '使用本工具产生的任何结果，请自行判断并承担相应责任。',
+          ] })))
     }
 
     function Panel() {

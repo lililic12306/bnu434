@@ -39,16 +39,83 @@ export async function loadHotTopics(dataDir) {
 }
 
 export function questionFor(entry, qtype) {
-  const name = entry.name
+  const name = String(entry.name).replace(/〔[^〕]*〕/g, '').replace(/（拓展）$/, '').trim()
   if (qtype === '名词解释') return '请解释：' + name
   if (qtype === '简答题') {
-    if (/类型|构成|分类|层次|内容|框架/.test(name)) return '简述' + name + '的主要内容。'
-    if (/原因|动因|为什么|为何/.test(name)) return '分析' + name + '的主要原因。'
-    if (/措施|路径|对策|如何/.test(name)) return '说明' + name + '的主要做法。'
-    if (/影响|效应|作用|意义/.test(name)) return '分析' + name + '的影响。'
+    if (/类型|构成|分类|层次|内容|框架/.test(name)) {
+      return name.endsWith('内容') ? '简述' + name + '。' : '简述' + name + '的主要内容。'
+    }
+    if (/原因|动因|为什么|为何/.test(name)) {
+      return /原因|动因/.test(name) ? '分析' + name + '。' : '分析' + name + '的主要原因。'
+    }
+    if (/措施|路径|对策|如何/.test(name)) {
+      return /措施|路径|对策/.test(name) ? '说明' + name + '。' : '说明' + name + '的主要做法。'
+    }
+    if (/影响|效应|作用|意义/.test(name)) {
+      return /影响|效应|作用|意义$/.test(name) ? '分析' + name + '。' : '分析' + name + '的影响。'
+    }
     return '简述' + name + '的主要内容。'
   }
   return '论述' + name + '的基本内容与要点。'
+}
+
+function cleanName(name) {
+  return String(name).replace(/〔[^〕]*〕/g, '').replace(/（拓展）$/, '').replace(/的$/, '').trim()
+}
+
+function discussFirst(entry, rnd, usedKinds) {
+  const name = cleanName(entry.name)
+  const pool = []
+  if (/争议|比较|区别|关系|异同|评价/.test(name)) {
+    pool.push({ kind: 'compare1', text: '分析' + name + '的主要观点与分歧。' })
+    pool.push({ kind: 'compare2', text: '比较' + name + '的主要分歧与启示。' })
+  } else if (/类型|构成|分类|层次|框架|维度|内容/.test(name)) {
+    pool.push({ kind: 'frame1', text: '阐述' + name + '的基本框架与主要内容。' })
+    pool.push({ kind: 'frame2', text: '说明' + name + '的构成与分类。' })
+  } else if (/影响|效应|作用|意义/.test(name)) {
+    pool.push({ kind: 'impact1', text: '分析' + name + '的主要内容及其影响。' })
+    pool.push({ kind: 'impact2', text: '说明' + name + '的作用机制。' })
+  } else if (/原因|动因|为什么|为何/.test(name)) {
+    pool.push({ kind: 'cause1', text: '分析' + name + '的主要动因。' })
+    pool.push({ kind: 'cause2', text: '说明' + name + '的形成原因。' })
+  } else {
+    pool.push({ kind: 'general1', text: '论述' + name + '的基本内容。' })
+    pool.push({ kind: 'general2', text: '阐述' + name + '的核心观点。' })
+  }
+  const fresh = pool.filter((x) => !usedKinds.has(x.kind))
+  const arr = fresh.length ? fresh : pool
+  const pick = arr[Math.floor(rnd() * arr.length)]
+  usedKinds.add(pick.kind)
+  return pick.text
+}
+
+function discussSecond(entry, hot, rnd, usedKinds) {
+  const name = cleanName(entry.name)
+  const hotName = hot ? hot.name : ''
+  const pool = []
+  if (hotName) pool.push({ kind: 'hot', text: '结合我国' + hotName + '背景，分析' + name + '带来的机遇与挑战。' })
+  if (/争议|比较|区别|关系|异同|评价/.test(name)) {
+    pool.push({ kind: 'inspire', text: '结合我国实际，说明' + name + '对我国的启示。' })
+    pool.push({ kind: 'policy', text: '结合我国实际，分析' + name + '对相关政策的参考意义。' })
+  } else if (/措施|路径|对策|如何|提升|改进/.test(name)) {
+    pool.push({ kind: 'path', text: '结合我国实际，论述我国企业应如何运用' + name + '提升国际竞争力。' })
+    pool.push({ kind: 'challenge', text: '结合我国实际，分析' + name + '在实践中面临的挑战与应对路径。' })
+  } else if (/影响|效应|作用|意义/.test(name)) {
+    pool.push({ kind: 'effect', text: '结合我国实际，分析' + name + '对我国相关产业与企业的影响。' })
+    pool.push({ kind: 'inspire', text: '结合我国实际，说明' + name + '对我国企业国际化经营的启示。' })
+  } else if (/理论|模型|范式|假说/.test(name)) {
+    pool.push({ kind: 'inspire', text: '结合我国实际，说明' + name + '对我国企业国际化经营的启示。' })
+    pool.push({ kind: 'fit', text: '结合我国实际，谈谈' + name + '在我国的适用性与局限。' })
+  } else {
+    pool.push({ kind: 'practice', text: '结合我国实际，谈谈' + name + '在我国的实践进展与改进方向。' })
+    pool.push({ kind: 'example', text: '以我国某行业或企业为例，说明' + name + '的实际应用。' })
+    pool.push({ kind: 'condition', text: '结合我国实际，分析' + name + '的实施条件与政策含义。' })
+  }
+  const fresh = pool.filter((x) => !usedKinds.has(x.kind))
+  const arr = fresh.length ? fresh : pool
+  const pick = arr[Math.floor(rnd() * arr.length)]
+  usedKinds.add(pick.kind)
+  return pick.text
 }
 
 export function answerFor(entry) {
@@ -86,6 +153,7 @@ export async function sampleExam(dataDir, rows, opts = {}) {
   if (!poolChapters.length) throw new Error('所选章节没有知识点')
   const weights = poolChapters.map((c) => (chapters.length ? 1 : Math.max(1, (metrics.chapter_total || {})[c] || 0)))
   const used = new Set()
+  const usedStems = new Set()
   const chapterUse = new Map()
 
   const pickEntry = (qtype) => {
@@ -126,7 +194,7 @@ export async function sampleExam(dataDir, rows, opts = {}) {
         chapter_name: entry.chapter_name,
         name: entry.name,
         stem: qtype === '论述题'
-          ? '（1）' + questionFor(entry, '论述题') + '（10分）\n（2）结合我国实际，分析' + (hotMatch[0] ? hotMatch[0].name + '背景下' : '') + entry.name + '相关的商务实践问题。（15分）'
+          ? '（1）' + discussFirst(entry, rnd, usedStems) + '（10分）\n（2）' + discussSecond(entry, hotMatch[0], rnd, usedStems) + '（15分）'
           : questionFor(entry, qtype),
         entry,
         hot: hotMatch[0] || null,
