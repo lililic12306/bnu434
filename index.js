@@ -262,7 +262,7 @@ export function apply(ctx, config) {
 
   ctx.tools.register(tool({
     name: 'zhenti_search',
-    description: '检索 434 知识点库（888 条，含 370 ★；四段式：定义、提纲、要点、真题考法）；可按关键词、考纲章、层级筛选。',
+    description: '检索 434 知识点库（四段式：定义、提纲、要点、真题考法）；可按关键词、考纲章、层级筛选。',
     parameters: {
       query: { type: 'string', description: '关键词，如 乌普萨拉、五力、区域一体化；为空则按章/层级列出。' },
       chapter: { type: 'integer', description: '考纲章号 1—15；可选。' },

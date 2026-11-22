@@ -1,6 +1,6 @@
 {
   "name": "bnu434",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "description": "北师大 434 国际商务：真题分析、按年份真题与答案、抽背/模考双模式、知识点笔记与检索",
   "type": "module",
   "main": "index.js",
