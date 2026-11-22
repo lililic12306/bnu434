@@ -3,9 +3,12 @@
 > 给备考 **北京师范大学 434 国际商务（专硕）** 的同学用的 DeepSeek Harness 插件：真题规律、按年份刷题、抽背、模考、知识点资料库，全部在一个面板里完成。
 
 [![npm](https://img.shields.io/npm/v/bnu434)](https://www.npmjs.com/package/bnu434)
+[![GitHub](https://img.shields.io/github/stars/lililic12306/bnu434?style=social)](https://github.com/lililic12306/bnu434)
 [![license](https://img.shields.io/badge/license-MIT%20%2B%20CC%20BY--NC--SA%204.0-blue)](#许可)
 
 ---
+
+源码仓库：https://github.com/lililic12306/bnu434
 
 ## 这是什么
 
