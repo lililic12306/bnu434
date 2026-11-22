@@ -1,0 +1,7 @@
+node_modules/
+.npm-cache/
+*.tgz
+dist/
+_pkg*.json
+_gh.json
+.DS_Store

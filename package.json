@@ -1,0 +1,59 @@
+{
+  "name": "bnu434",
+  "version": "0.7.6",
+  "description": "北师大 434 国际商务：真题分析、按年份真题与答案、抽背/模考双模式、888 条知识点笔记（加密）与检索",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "zhenti",
+    "434",
+    "考研",
+    "国际商务"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "analyzer.js",
+    "mock.js",
+    "client.js",
+    "cordis.patch.yml",
+    "core/data",
+    "prompts",
+    "locale/*.json",
+    "docs",
+    "icon.svg",
+    "LICENSE",
+    "DATA-LICENSE.md",
+    "README.md",
+    "crypto.js",
+    "knowledge.js",
+    "drill.js"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-sidebar-right",
+        "@deepseek-ai/dsh-client-modules"
+      ]
+    }
+  }
+}

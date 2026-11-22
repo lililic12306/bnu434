@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "BNU434 papers and mock exams",
+    "description": "BNU 434 international business: past-paper statistics and heat report, topic tagging, and random mock-exam blueprints with an encapsulated prompt for the user's model to generate the paper and answers. Statistical summary only, not a prediction.",
+    "detail": "docs/DETAIL.md"
+  }
+}
