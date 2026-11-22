@@ -117,7 +117,7 @@ bnu434/
 ├── drill.js          # 抽背/模考出题、AI 提示词、AI 逐题解析
 ├── knowledge.js      # 知识库加载与检索（支持加密文件）
 ├── mock.js           # 命题蓝图（进阶工具用）
-├── crypto.js         # AES-256-GCM 简单加密
+├── crypto.js         # 本地内容读取
 ├── core/data/        # 随包数据：真题、知识点、热点、加密后的笔记与答案
 ├── prompts/          # 封装提示词
 ├── locale/           # 中英文文案
@@ -142,9 +142,8 @@ bnu434/
 npm pack    # 生成 tarball，可作为 install_bundle 的本地 target 验证
 ```
 
-- 分析内核与出题内核都是纯 JavaScript，无 Python 依赖；
-- 内容以 AES-256-GCM 统一密钥加密，构建时由 `scripts/encrypt-content.mjs` 生成；
-- 面板宽度、滚动、跨视图状态保持均已在客户端处理。
+- 构建、加密与发布说明见 `docs/DEVELOPMENT.md`；
+- 修复与改动记录见 `CHANGELOG.md`。
 
 ---
 
